@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <title>Code Monkey</title>
+
+</head>
+
+<body>
+    <div id="container">
+        <div id="test-wrapper">
+            <div id="stats">
+                <div id="word-count"></div>
+            </div>
+            <div id="input-wrapper">
+                <input type="text" id="user-text" onpaste="return false;" ondrop="return false;" spellcheck="false"
+                    autocomplete="off" autocorrect="off" autocapitalize="off" />
+
+                <div id="start-text" contenteditable="true"></div>
+            </div>
+        </div>
+        <div id="results">
+            <table>
+                <tr class="primary-result">
+                    <td class="value" id="wpm"></td>
+                    <td class="unit">wpm</td>
+                </tr>
+                <tr class="primary-result">
+                    <td class="value" id="accuracy"></td>
+                    <td class="unit">accuracy</td>
+                </tr>
+                <tr class="secondary-result">
+                    <td class="value" id="raw-wpm"></td>
+                    <td class="unit">raw wpm</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+
+
+</html>

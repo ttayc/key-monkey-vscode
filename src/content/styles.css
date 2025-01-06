@@ -1,0 +1,78 @@
+:root {
+  --correct-char-color: black;
+  --incorrect-char-color: red;
+  --excess-char-color: darkred;
+  --blank-char-color: gray;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  /* pointer-events: none; */
+  font-family: monospace;
+  font-size: 1.5em;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#container {
+  max-width: 75%;
+}
+
+div:focus {
+  font-weight: bold;
+}
+
+#user-text {
+  opacity: 0;
+  position: absolute;
+}
+
+#results .primary-result {
+  font-weight: bold;
+  /* font-size: 1.1em; */
+}
+
+#results table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#results table td.value {
+  text-align: right;
+  padding-right: 1rem;
+  /* width: 70%; */
+}
+
+#results table td.unit {
+  text-align: left;
+  /* width: 30%;  */
+}
+
+.char.cursor {
+  border-left: 0.05em solid black;
+}
+
+.char.correct {
+  color: var(--correct-char-color);
+}
+
+.char.incorrect {
+  color: var(--incorrect-char-color);
+}
+.char.blank {
+  color: var(--blank-char-color);
+}
+.char.excess {
+  color: var(--excess-char-color);
+}
+
+.hidden {
+  display: none;
+}
