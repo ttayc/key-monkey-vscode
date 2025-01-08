@@ -4,8 +4,7 @@ const userInputField = (document.getElementById("user-text") as HTMLFormElement)
 const displayedText = (document.getElementById("start-text") as HTMLElement);
 const resultsDisplay = (document.getElementById("results") as HTMLElement);
 
-const TEXT = "the quick brown fox jumps over the lazy dog";
-// const TEXT = "www ww";
+const TEXT = ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"];
 const WORDS: TestWord[] = [];
 let currentWord = 0;
 let completedWord = -1;
@@ -350,10 +349,10 @@ inputWrapper.addEventListener("click", (_) => {
 });
 
 
-const initializeTest = function(text: string) {
+const initializeTest = function(text: string[]) {
   resultsDisplay.classList.add("hidden");
 
-  text.split(' ').forEach((wordText) => {
+  text.forEach((wordText) => {
     const wordElem = document.createElement("span");
     wordElem.classList.add('word');
 

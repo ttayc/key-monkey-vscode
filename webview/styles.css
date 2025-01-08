@@ -25,13 +25,24 @@ body {
   max-width: 75%;
 }
 
-div:focus {
+/* div:focus {
   font-weight: bold;
-}
+} */
 
 #user-text {
   opacity: 0;
   position: absolute;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#start-text {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 #results .primary-result {
