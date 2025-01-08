@@ -1,17 +1,16 @@
 :root {
-  --correct-char-color: black;
-  --incorrect-char-color: red;
-  --excess-char-color: darkred;
-  --blank-char-color: gray;
+  --correct-char-color: var(--vscode-editor-foreground);
+  --incorrect-char-color: rgb(225, 0, 0);
+  --excess-char-color: rgb(225, 0, 0);
+  --blank-char-color: var(--vscode-editor-foreground);
 }
 
 html,
 body {
   margin: 0;
   height: 100%;
-  /* pointer-events: none; */
-  font-family: monospace;
-  font-size: 1.5em;
+  font-family: var(--vscode-editor-font-family);
+  font-size: calc(var(--vscode-editor-font-size) * 1.8);
 }
 
 body {
@@ -58,16 +57,14 @@ body {
 #results table td.value {
   text-align: right;
   padding-right: 1rem;
-  /* width: 70%; */
 }
 
 #results table td.unit {
   text-align: left;
-  /* width: 30%;  */
 }
 
 .char.cursor {
-  border-left: 0.05em solid black;
+  border-left: 0.05em solid var(--correct-char-color);
 }
 
 .char.correct {
@@ -80,10 +77,12 @@ body {
 
 .char.blank {
   color: var(--blank-char-color);
+  opacity: 0.5;
 }
 
 .char.excess {
   color: var(--excess-char-color);
+  opacity: 0.7;
 }
 
 .hidden {

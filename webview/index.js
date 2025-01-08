@@ -1,49 +1,58 @@
-var testWrapper = document.getElementById("test-wrapper");
-var inputWrapper = document.getElementById("input-wrapper");
-var userInputField = document.getElementById("user-text");
-var displayedText = document.getElementById("start-text");
-var resultsDisplay = document.getElementById("results");
-var TEXT = ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"];
-var WORDS = [];
-var currentWord = 0;
-var completedWord = -1;
-var started = false;
-var startTime;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const testWrapper = document.getElementById("test-wrapper");
+const inputWrapper = document.getElementById("input-wrapper");
+const userInputField = document.getElementById("user-text");
+const displayedText = document.getElementById("start-text");
+const resultsDisplay = document.getElementById("results");
+const TEXT = ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"];
+const WORDS = [];
+let currentWord = 0;
+let completedWord = -1;
+let started = false;
+let startTime;
 /*
  * TestWord represents a word in the typing test
  * it contains the test word and the word that the user has input
  */
-var TestWord = /** @class */ (function () {
-    function TestWord(text, wordDomElem) {
+class TestWord {
+    wordDomElem;
+    // the intended text of this word
+    testText;
+    // the user's text for this word
+    userText;
+    // HTMLElements to render text, may contain extra chars based on user input
+    // domElements: HTMLElement[];
+    trailingSpace;
+    constructor(text, wordDomElem) {
         this.testText = text;
         this.userText = "";
         this.wordDomElem = wordDomElem;
         // this.domElements = [];
-        for (var i = 0; i < text.length; i++) {
-            var char = document.createElement("span");
+        for (let i = 0; i < text.length; i++) {
+            const char = document.createElement("span");
             char.classList.add("char", "blank");
             char.innerText = text[i];
             // this.domElements.push(char);
             wordDomElem.appendChild(char);
         }
-        var space = document.createElement("span");
+        const space = document.createElement("span");
         space.classList.add("char", "blank");
         space.innerText = ' ';
         this.trailingSpace = space;
         wordDomElem.appendChild(space);
     }
-    TestWord.prototype.setCursor = function () {
-        var _a;
-        (_a = this.wordDomElem.children.item(this.userText.length)) === null || _a === void 0 ? void 0 : _a.classList.add('cursor');
+    setCursor() {
+        this.wordDomElem.children.item(this.userText.length)?.classList.add('cursor');
         // if (pos === this.domElements.length) {
         //   this.trailingSpace.classList.add('cursor');
         //   return
         // }
         // this.domElements[pos].classList.add('cursor');
-    };
-    TestWord.prototype.setColors = function () {
-        for (var i = 0; i < this.wordDomElem.children.length; i++) {
-            var testChar = this.wordDomElem.children.item(i);
+    }
+    setColors() {
+        for (let i = 0; i < this.wordDomElem.children.length; i++) {
+            const testChar = this.wordDomElem.children.item(i);
             if (!testChar) {
                 break;
             }
@@ -66,14 +75,14 @@ var TestWord = /** @class */ (function () {
                 testChar.classList.remove("blank", "correct", "excess");
             }
         }
-    };
-    TestWord.prototype.writeChar = function (char) {
+    }
+    writeChar(char) {
         this.userText = this.userText.concat(char);
         if (this.userText.length > this.testText.length) {
             WORDS[currentWord].addExcessChar(char);
         }
-    };
-    TestWord.prototype.backspace = function () {
+    }
+    backspace() {
         if (this.userText !== "") {
             if (this.userText.length > this.testText.length) {
                 WORDS[currentWord].removeExcessChar();
@@ -82,21 +91,21 @@ var TestWord = /** @class */ (function () {
             // console.log('bksp');
         }
         return;
-    };
+    }
     /*
      * Check if word is complete
      * @return true if word is complete (user text matches test text)
      */
-    TestWord.prototype.isComplete = function () {
+    isComplete() {
         return this.userText === this.testText;
-    };
+    }
     /*
      * Obtain stats of this word
      * @return counts of correct, incorrect, excess, missed
      */
-    TestWord.prototype.wordStats = function () {
-        var _a = [0, 0, 0, 0], correct = _a[0], incorrect = _a[1], excess = _a[2], missed = _a[3];
-        var i = 0;
+    wordStats() {
+        let [correct, incorrect, excess, missed] = [0, 0, 0, 0];
+        let i = 0;
         for (; i < this.userText.length; i++) {
             if (i >= this.testText.length) {
                 excess++;
@@ -112,41 +121,39 @@ var TestWord = /** @class */ (function () {
             missed++;
         }
         return [correct, incorrect, excess, missed];
-    };
-    TestWord.prototype.addExcessChar = function (char) {
-        var charElem = document.createElement("span");
+    }
+    addExcessChar(char) {
+        const charElem = document.createElement("span");
         charElem.classList.add("char", "blank");
         charElem.innerText = char;
         this.wordDomElem.insertBefore(charElem, this.wordDomElem.lastChild);
-    };
-    TestWord.prototype.removeExcessChar = function () {
-        var _a, _b;
-        (_b = (_a = this.wordDomElem.lastChild) === null || _a === void 0 ? void 0 : _a.previousSibling) === null || _b === void 0 ? void 0 : _b.remove();
-    };
-    return TestWord;
-}());
+    }
+    removeExcessChar() {
+        this.wordDomElem.lastChild?.previousSibling?.remove();
+    }
+}
 //  ================================================================
-var clearCursor = function () {
-    var currCursor = document.querySelector(".cursor");
+const clearCursor = function () {
+    const currCursor = document.querySelector(".cursor");
     if (currCursor) {
         currCursor.classList.remove("cursor");
     }
 };
-var setCursor = function () {
+const setCursor = function () {
     clearCursor();
     WORDS[currentWord].setCursor();
 };
-var setColors = function () {
-    WORDS.forEach(function (word) { return word.setColors(); });
+const setColors = function () {
+    WORDS.forEach((word) => word.setColors());
 };
-var endTest = function () {
+const endTest = function () {
     // console.log("END");
-    var elapsedTime = Date.now() - startTime;
-    var results = calculateResults(WORDS, elapsedTime);
+    const elapsedTime = Date.now() - startTime;
+    const results = calculateResults(WORDS, elapsedTime);
     // console.log(results);
-    document.getElementById("wpm").innerText = "".concat(Math.round(results.wpm));
-    document.getElementById("accuracy").innerText = "".concat(Math.round(results.accuracy * 100), "%");
-    document.getElementById("raw-wpm").innerText = "".concat(Math.round(results.rawWpm));
+    document.getElementById("wpm").innerText = `${Math.round(results.wpm)}`;
+    document.getElementById("accuracy").innerText = `${Math.round(results.accuracy * 100)}%`;
+    document.getElementById("raw-wpm").innerText = `${Math.round(results.rawWpm)}`;
     // (document.getElementById("chars-correct") as HTMLElement).innerText = `${results.correctChars}`
     // (document.getElementById("chars-incorrect") as HTMLElement).innerText = `${results.wpm} wpm`
     // (document.getElementById("chars-correct") as HTMLElement).innerText = `${results.wpm} wpm`
@@ -154,33 +161,33 @@ var endTest = function () {
     resultsDisplay.classList.remove("hidden");
     testWrapper.classList.add("hidden");
 };
-var updateWordCount = function () {
-    var wordCountDisplay = document.getElementById("word-count");
-    wordCountDisplay.innerText = "".concat(currentWord, "/").concat(WORDS.length);
+const updateWordCount = function () {
+    const wordCountDisplay = document.getElementById("word-count");
+    wordCountDisplay.innerText = `${currentWord}/${WORDS.length}`;
 };
-var calculateResults = function (words, milliseconds) {
+const calculateResults = function (words, milliseconds) {
     // wpm = (characters_in_correct_words (with spaces) / 5 ) / 60 seconds
     // raw wpm = (characters_in_all_words (with spaces) / 5 ) / 60 seconds
     // accuracy = correct_key_presses / total_key_presses = correctChars / totalChars
-    var correctWords = words.filter(function (word) { return word.isComplete(); });
+    const correctWords = words.filter((word) => word.isComplete());
     // Add correctWords.length - 1 for spaces
-    var correctWordCharCount = correctWords
-        .reduce(function (count, word) { return count + word.userText.length; }, 0) + correctWords.length - 1;
+    const correctWordCharCount = correctWords
+        .reduce((count, word) => count + word.userText.length, 0) + correctWords.length - 1;
     // Add words.length - 1 for spaces
-    var allWordCharCount = words.reduce(function (count, word) { return count + word.userText.length; }, 0) + words.length - 1;
-    var seconds = milliseconds / 1000 / 60;
-    var wpm = (correctWordCharCount / 5) / seconds;
-    var rawWpm = (allWordCharCount / 5) / seconds;
-    var _a = [0, 0, 0, 0], correctChars = _a[0], incorrectChars = _a[1], excessChars = _a[2], missingChars = _a[3];
-    words.forEach(function (word) {
-        var _a = word.wordStats(), correct = _a[0], incorrect = _a[1], excess = _a[2], missing = _a[3];
+    const allWordCharCount = words.reduce((count, word) => count + word.userText.length, 0) + words.length - 1;
+    const seconds = milliseconds / 1000 / 60;
+    const wpm = (correctWordCharCount / 5) / seconds;
+    const rawWpm = (allWordCharCount / 5) / seconds;
+    let [correctChars, incorrectChars, excessChars, missingChars] = [0, 0, 0, 0];
+    words.forEach((word) => {
+        const [correct, incorrect, excess, missing] = word.wordStats();
         correctChars += correct;
         incorrectChars += incorrect;
         excessChars += excess;
         missingChars += missing;
     });
     // don't count spaces?
-    var accuracy = correctChars / (correctChars + incorrectChars + excessChars + missingChars);
+    const accuracy = correctChars / (correctChars + incorrectChars + excessChars + missingChars);
     return {
         elapsedMs: milliseconds,
         wpm: Math.max(wpm, 0),
@@ -193,11 +200,11 @@ var calculateResults = function (words, milliseconds) {
     };
 };
 // ========================================================================
-userInputField.addEventListener("keydown", function (event) {
+userInputField.addEventListener("keydown", (event) => {
     // console.log(event);
     // prevent movement within input field
-    var keyboardEvent = event;
-    var key = keyboardEvent.key;
+    const keyboardEvent = event;
+    const key = keyboardEvent.key;
     if (key.includes('Arrow') || key === 'Delete') {
         event.preventDefault();
         return false;
@@ -215,14 +222,14 @@ userInputField.addEventListener("keydown", function (event) {
         return false;
     }
 });
-var processInput = function (event) {
+const processInput = function (event) {
     // console.log((event.target as HTMLTextAreaElement).value);
     // console.log(event);
     if (event.inputType === "deleteContentBackward") {
         WORDS[currentWord].backspace();
         return;
     }
-    var data = event.data;
+    const data = event.data;
     if (!data) {
         return;
     }
@@ -256,29 +263,28 @@ var processInput = function (event) {
         event.target.value = "";
     }
 };
-userInputField.addEventListener("input", function (event) {
+userInputField.addEventListener("input", (event) => {
     processInput(event);
     // console.log(WORDS.map((word) => word.userText));
     setCursor();
     setColors();
     updateWordCount();
-    // matchInputWithTest(userInputField.value, testText);
 });
-userInputField.addEventListener("blur", function (_) {
+userInputField.addEventListener("blur", (_) => {
     clearCursor();
     // console.log("blur");
 });
-inputWrapper.addEventListener("click", function (_) {
+inputWrapper.addEventListener("click", (_) => {
     userInputField.focus();
     setCursor();
     // console.log("focus");
 });
-var initializeTest = function (text) {
+const initializeTest = function (text) {
     resultsDisplay.classList.add("hidden");
-    text.forEach(function (wordText) {
-        var wordElem = document.createElement("span");
+    text.forEach((wordText) => {
+        const wordElem = document.createElement("span");
         wordElem.classList.add('word');
-        var word = new TestWord(wordText, wordElem);
+        const word = new TestWord(wordText, wordElem);
         WORDS.push(word);
         displayedText.appendChild(wordElem);
         // word.domElements.forEach((char) => displayedText.appendChild(char))
@@ -290,3 +296,4 @@ var initializeTest = function (text) {
     userInputField.focus();
 };
 initializeTest(TEXT);
+//# sourceMappingURL=index.js.map

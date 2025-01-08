@@ -1,16 +1,5 @@
 import * as vscode from "vscode";
 
-// export function getWebviewOptions(
-//   extensionUri: vscode.Uri
-// ): vscode.WebviewOptions {
-//   return {
-//     enableScripts: true,
-//     localResourceRoots: [vscode.Uri.joinPath(extensionUri, "webview")],
-//     retainContextWhenHidden: true, // Retains the WebView's state
-//   };
-// }
-
-
 export class TypingTestPanel {
   public static currentPanel: TypingTestPanel | undefined;
 

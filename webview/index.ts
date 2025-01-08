@@ -334,7 +334,6 @@ userInputField.addEventListener("input", (event) => {
   setCursor();
   setColors();
   updateWordCount();
-  // matchInputWithTest(userInputField.value, testText);
 });
 
 userInputField.addEventListener("blur", (_) => {
