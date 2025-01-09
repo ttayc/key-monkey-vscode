@@ -4,7 +4,6 @@ const userInputField = (document.getElementById("user-text") as HTMLFormElement)
 const displayedText = (document.getElementById("start-text") as HTMLElement);
 const resultsDisplay = (document.getElementById("results") as HTMLElement);
 
-const TEXT = ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"];
 const WORDS: TestWord[] = [];
 let currentWord = 0;
 let completedWord = -1;
@@ -348,7 +347,7 @@ inputWrapper.addEventListener("click", (_) => {
 });
 
 
-const initializeTest = function(text: string[]) {
+export default function initializeTest(text: string[]) {
   resultsDisplay.classList.add("hidden");
 
   text.forEach((wordText) => {
@@ -370,6 +369,4 @@ const initializeTest = function(text: string[]) {
   updateWordCount();
   userInputField.focus();
 }
-
-initializeTest(TEXT);
 

@@ -20,13 +20,13 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile && npm run compile:webview",
+    "vscode:prepublish": "npm run compile && npm run build:webview",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "compile:webview": "tsc -p tsconfig.webview.json"
+    "build:webview": "node build.js"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -36,6 +36,7 @@
     "@typescript-eslint/parser": "^8.17.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.24.2",
     "eslint": "^9.16.0",
     "typescript": "^5.7.2"
   }
