@@ -4,11 +4,11 @@ const userInputField = (document.getElementById("user-text") as HTMLFormElement)
 const displayedText = (document.getElementById("start-text") as HTMLElement);
 const resultsDisplay = (document.getElementById("results") as HTMLElement);
 
-const WORDS: TestWord[] = [];
-let currentWord = 0;
-let completedWord = -1;
+let WORDS: TestWord[] = [];
+let currentWord: number;
+let completedWord: number;
 
-let started = false;
+let started: boolean;
 let startTime: number;
 
 /*
@@ -53,11 +53,6 @@ class TestWord {
 
   public setCursor() {
     this.wordDomElem.children.item(this.userText.length)?.classList.add('cursor');
-    // if (pos === this.domElements.length) {
-    //   this.trailingSpace.classList.add('cursor');
-    //   return
-    // }
-    // this.domElements[pos].classList.add('cursor');
   }
 
   public setColors() {
@@ -106,6 +101,13 @@ class TestWord {
       // console.log('bksp');
     }
     return;
+  }
+
+  /*
+   * Resets word to empty
+   */
+  public reset() {
+    this.userText = "";
   }
 
   /*
@@ -171,6 +173,18 @@ const setColors = function() {
   WORDS.forEach((word) => word.setColors());
 };
 
+const wordCountDisplay = (document.getElementById("word-count") as HTMLElement)
+const updateWordCount = function() {
+  wordCountDisplay.innerText = `${currentWord}/${WORDS.length}`
+};
+
+const updateDisplay = function() {
+  setCursor();
+  setColors();
+  updateWordCount();
+}
+
+
 const endTest = function() {
   // console.log("END");
 
@@ -187,11 +201,6 @@ const endTest = function() {
   resultsDisplay.classList.remove("hidden");
   testWrapper.classList.add("hidden");
 }
-
-const updateWordCount = function() {
-  const wordCountDisplay = (document.getElementById("word-count") as HTMLElement)
-  wordCountDisplay.innerText = `${currentWord}/${WORDS.length}`
-};
 
 
 type TestResults = {
@@ -330,9 +339,7 @@ userInputField.addEventListener("input", (event) => {
 
   // console.log(WORDS.map((word) => word.userText));
 
-  setCursor();
-  setColors();
-  updateWordCount();
+  updateDisplay();
 });
 
 userInputField.addEventListener("blur", (_) => {
@@ -347,8 +354,16 @@ inputWrapper.addEventListener("click", (_) => {
 });
 
 
-export default function initializeTest(text: string[]) {
+export function initializeTest(text: string[]) {
   resultsDisplay.classList.add("hidden");
+  testWrapper.classList.remove("hidden");
+
+  WORDS = [];
+  displayedText.innerText = "";
+
+  currentWord = 0;
+  completedWord = -1;
+  started = false;
 
   text.forEach((wordText) => {
     const wordElem = document.createElement("span");
@@ -358,15 +373,25 @@ export default function initializeTest(text: string[]) {
     WORDS.push(word);
 
     displayedText.appendChild(wordElem);
-
-    // word.domElements.forEach((char) => displayedText.appendChild(char))
-    // displayedText.appendChild(word.trailingSpace);
   });
 
-  // remove trailing space
-  // testText.removeChild(testText.children.item(testText.children.length - 1)!);
+  updateDisplay();
+  userInputField.focus();
+}
 
-  updateWordCount();
+export function resetOrRestartTest() {
+  WORDS.forEach((word) => {
+    word.reset();
+  });
+  currentWord = 0;
+  completedWord = -1;
+  started = false;
+
+  updateDisplay();
+
+  resultsDisplay.classList.add("hidden");
+  testWrapper.classList.remove("hidden");
+
   userInputField.focus();
 }
 

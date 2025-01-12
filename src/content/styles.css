@@ -11,7 +11,7 @@ body {
   height: 100%;
   /* pointer-events: none; */
   font-family: monospace;
-  font-size: 1.5em;
+  font-size: 1.2em;
 }
 
 body {
@@ -21,13 +21,13 @@ body {
   justify-content: center;
 }
 
-#container {
+#wrapper {
   max-width: 75%;
 }
 
-div:focus {
-  font-weight: bold;
-}
+/* div:focus { */
+/*   font-weight: bold; */
+/* } */
 
 #user-text {
   opacity: 0;
@@ -41,18 +41,20 @@ div:focus {
 
 #results table {
   width: 100%;
+  /* border: 1px solid black; */
   border-collapse: collapse;
+  margin-bottom: 2em;
 }
 
 #results table td.value {
   text-align: right;
   padding-right: 1rem;
-  /* width: 70%; */
+  width: 50%;
 }
 
 #results table td.unit {
   text-align: left;
-  /* width: 30%;  */
+  width: 50%;
 }
 
 .char.cursor {
@@ -73,6 +75,30 @@ div:focus {
 
 .char.excess {
   color: var(--excess-char-color);
+}
+
+#input-wrapper {
+  padding-bottom: 1em;
+}
+
+#test-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 1.5em;
+}
+
+button.btn-minimal {
+  border: none;
+  color: var(--blank-char-color);
+}
+
+button.btn-minimal:hover {
+  color: var(--correct-char-color);
+}
+
+button.btn-minimal:active {
+  color: var(--blank-char-color) !important;
 }
 
 .hidden {
