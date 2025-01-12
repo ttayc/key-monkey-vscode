@@ -355,15 +355,8 @@ inputWrapper.addEventListener("click", (_) => {
 
 
 export function initializeTest(text: string[]) {
-  resultsDisplay.classList.add("hidden");
-  testWrapper.classList.remove("hidden");
-
   WORDS = [];
   displayedText.innerText = "";
-
-  currentWord = 0;
-  completedWord = -1;
-  started = false;
 
   text.forEach((wordText) => {
     const wordElem = document.createElement("span");
@@ -375,7 +368,13 @@ export function initializeTest(text: string[]) {
     displayedText.appendChild(wordElem);
   });
 
+  currentWord = 0;
+  completedWord = -1;
+  started = false;
+
   updateDisplay();
+  resultsDisplay.classList.add("hidden");
+  testWrapper.classList.remove("hidden");
   userInputField.focus();
 }
 
@@ -383,15 +382,14 @@ export function resetOrRestartTest() {
   WORDS.forEach((word) => {
     word.reset();
   });
+
   currentWord = 0;
   completedWord = -1;
   started = false;
 
   updateDisplay();
-
   resultsDisplay.classList.add("hidden");
   testWrapper.classList.remove("hidden");
-
   userInputField.focus();
 }
 
