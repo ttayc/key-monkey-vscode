@@ -24,7 +24,7 @@ document.getElementById("next-button")?.addEventListener("click", (_) => {
 });
 
 
-const getNewPassage = function(config: TypingTestConfig) {
+export function getNewPassage(config: TypingTestConfig) {
   vscode.postMessage({
     command: 'passage-request',
     mode: config.mode,

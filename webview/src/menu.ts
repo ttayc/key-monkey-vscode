@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import './modes';
+import { getNewPassage } from './index';
 
 let currentMode: Mode = "words";
 let currentLength: Record<Mode, Partial<Length>> = {
@@ -8,7 +9,7 @@ let currentLength: Record<Mode, Partial<Length>> = {
   "time": "15s"
 }
 
-type TypingTestConfig = {
+export type TypingTestConfig = {
   mode: Mode,
   length: Length
 };
@@ -27,7 +28,12 @@ const modeOptions: Record<Mode, JQuery<HTMLElement>> = {
 }
 
 const setModeActive = function(mode: Mode) {
+  if (currentMode === mode) {
+    return;
+  }
   currentMode = mode;
+  // TODO: uncomment when other modes are implemented
+  // getNewPassage(getTypingTestConfig());
 
   for (const [_mode, elem] of Object.entries(modeOptions)) {
     if (mode === _mode) {
@@ -37,6 +43,7 @@ const setModeActive = function(mode: Mode) {
     }
   }
   showLengthOptions(mode);
+
 };
 
 (function addEventListenersToModes() {
@@ -46,34 +53,6 @@ const setModeActive = function(mode: Mode) {
     })
   }
 })();
-
-// const wordsOption = $("#mode-menu .nav-item .mode-words");
-// const quoteOption = $("#mode-menu .nav-item .mode-quote");
-// const timeOption = $("#mode-menu .nav-item .mode-time");
-
-// wordsOption.on('click', (_) => {
-//   currentMode = "words";
-//   wordsOption.addClass("active");
-//   quoteOption.removeClass("active");
-//   timeOption.removeClass("active");
-//   showLengthOptions("words");
-// })
-//
-// quoteOption.on('click', (_) => {
-//   currentMode = "quote";
-//   quoteOption.addClass("active");
-//   wordsOption.removeClass("active");
-//   timeOption.removeClass("active");
-//   showLengthOptions("quote");
-// })
-//
-// timeOption.on('click', (_) => {
-//   currentMode = "time";
-//   timeOption.addClass("active");
-//   wordsOption.removeClass("active");
-//   quoteOption.removeClass("active");
-//   showLengthOptions("time");
-// })
 
 type ModesToLengths = Record<string, Partial<Record<Length, JQuery<HTMLElement>>>>;
 const modesToLengths: ModesToLengths = {
@@ -99,6 +78,7 @@ const modesToLengths: ModesToLengths = {
 const setLengthActive = function(mode: Mode, length: Length) {
   currentMode = mode;
   currentLength[mode] = length;
+  getNewPassage(getTypingTestConfig());
 
   for (const [len, elem] of Object.entries(modesToLengths[mode])) {
     if (length === len) {
@@ -107,6 +87,7 @@ const setLengthActive = function(mode: Mode, length: Length) {
       elem.removeClass("active");
     }
   }
+
 };
 
 (function addEventListenersToLengths() {
