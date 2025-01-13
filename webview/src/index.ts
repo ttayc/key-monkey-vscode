@@ -1,13 +1,13 @@
-import 'bootstrap';
+import { Tooltip } from 'bootstrap';
 import "./vscode-webview.d.ts";
 import { initializeTest, resetOrRestartTest } from "./typing-test";
-import './buttons';
+import { TypingTestConfig, getTypingTestConfig } from "./menu"
 
 const vscode = acquireVsCodeApi();
 
 // tooltips
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const _ = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+const _ = [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl))
 
 let currentPassage: string[];
 
@@ -20,15 +20,15 @@ document.getElementById("retry-button")?.addEventListener("click", (_) => {
 });
 
 document.getElementById("next-button")?.addEventListener("click", (_) => {
-  getNewPassage('common-200', 10);
+  getNewPassage(getTypingTestConfig());
 });
 
 
-const getNewPassage = function(mode: string, length: number) {
+const getNewPassage = function(config: TypingTestConfig) {
   vscode.postMessage({
     command: 'passage-request',
-    mode: mode,
-    length: length
+    mode: config.mode,
+    length: config.length
   });
 }
 
@@ -42,5 +42,5 @@ window.addEventListener('message', event => {
   }
 });
 
-getNewPassage('common-200', 10);
+getNewPassage(getTypingTestConfig());
 

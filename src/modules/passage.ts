@@ -1,7 +1,7 @@
 import { Uri, workspace } from "vscode";
 
 export default async function getPassage(extensionUri: Uri, mode: string, length: number): Promise<string[]> {
-  const path = Uri.joinPath(extensionUri, 'src', 'words.json');
+  const path = Uri.joinPath(extensionUri, 'src', 'data.json');
   const raw = await workspace.fs.readFile(path)
   const contents = Buffer.from(raw).toString('utf8');
   const contentsJson = JSON.parse(contents);

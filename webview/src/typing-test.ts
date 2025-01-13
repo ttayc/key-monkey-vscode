@@ -1,3 +1,4 @@
+const menu = (document.getElementById("menu") as HTMLElement);
 const testWrapper = (document.getElementById("test-wrapper") as HTMLElement);
 const inputWrapper = (document.getElementById("input-wrapper") as HTMLElement);
 const userInputField = (document.getElementById("user-text") as HTMLFormElement);
@@ -200,6 +201,7 @@ const endTest = function() {
   // (document.getElementById("chars-correct") as HTMLElement).innerText = `${results.wpm} wpm`
   resultsDisplay.classList.remove("hidden");
   testWrapper.classList.add("hidden");
+  menu.classList.add("hidden");
 }
 
 
@@ -375,6 +377,7 @@ export function initializeTest(text: string[]) {
   updateDisplay();
   resultsDisplay.classList.add("hidden");
   testWrapper.classList.remove("hidden");
+  menu.classList.remove("hidden");
   userInputField.focus();
 }
 
