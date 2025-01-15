@@ -28,7 +28,7 @@ export async function getPassage(extensionUri: Uri, mode: string, length: string
   switch (mode) {
     case "words":
       if (!wordsCache) {
-        path = Uri.joinPath(extensionUri, "src", "passages", "words.json");
+        path = Uri.joinPath(extensionUri, "passages", "words.json");
         raw = await workspace.fs.readFile(path)
         contents = Buffer.from(raw).toString("utf8");
         wordsCache = JSON.parse(contents);
@@ -48,7 +48,7 @@ export async function getPassage(extensionUri: Uri, mode: string, length: string
       break;
     case "quote":
       if (!quotesCache) {
-        path = Uri.joinPath(extensionUri, "src", "passages", "quotes.json");
+        path = Uri.joinPath(extensionUri, "passages", "quotes.json");
         raw = await workspace.fs.readFile(path)
         contents = Buffer.from(raw).toString("utf8");
         quotesCache = JSON.parse(contents);
