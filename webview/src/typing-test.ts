@@ -12,6 +12,13 @@ let completedWord: number;
 let started: boolean;
 let startTime: number;
 
+// passage metadata
+let mode: Mode;
+let length: Length;
+let by: string;
+let context: string;
+
+
 /*
  * TestWord represents a word in the typing test
  * it contains the test word and the word that the user has input
@@ -356,11 +363,11 @@ inputWrapper.addEventListener("click", (_) => {
 });
 
 
-export function initializeTest(text: string[]) {
+export function initializeTest(passage) {
   WORDS = [];
   displayedText.innerText = "";
 
-  text.forEach((wordText) => {
+  passage.text.forEach((wordText) => {
     const wordElem = document.createElement("span");
     wordElem.classList.add('word');
 
@@ -373,6 +380,11 @@ export function initializeTest(text: string[]) {
   currentWord = 0;
   completedWord = -1;
   started = false;
+
+  mode = passage.mode;
+  by = passage.by;
+  length = passage.length;
+  context = passage.context;
 
   updateDisplay();
   resultsDisplay.classList.add("hidden");

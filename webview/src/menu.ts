@@ -33,7 +33,7 @@ const setModeActive = function(mode: Mode) {
   }
   currentMode = mode;
   // TODO: uncomment when other modes are implemented
-  // getNewPassage(getTypingTestConfig());
+  getNewPassage(getTypingTestConfig());
 
   for (const [_mode, elem] of Object.entries(modeOptions)) {
     if (mode === _mode) {

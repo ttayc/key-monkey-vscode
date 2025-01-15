@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import getPassage from "./passage";
+import { getPassage, Passage } from "./passage";
 
 export class TypingTestPanel {
     public static currentPanel: TypingTestPanel | undefined;
@@ -66,7 +66,7 @@ export class TypingTestPanel {
         // Handle messages from the webview
         this._panel.webview.onDidReceiveMessage(
             async (message) => {
-                let passage: string[] = [];
+                let passage: Passage | null = null;
                 switch (message.command) {
                     case "passage-request":
                         passage = await getPassage(
@@ -76,6 +76,10 @@ export class TypingTestPanel {
                         );
                 }
 
+                if (!passage) {
+                    console.error("unable to receive passage");
+                    return;
+                }
                 this._panel.webview.postMessage({
                     command: "passage-response",
                     passage: passage,
