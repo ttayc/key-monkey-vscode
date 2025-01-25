@@ -1,9 +1,9 @@
 # TODO
 
 - add timeout if user takes too long (forgot about test in background)
-- add a bank of quotes
-- add timer mode
 - add more stats -- total time, character stats
+- some sort of scroll system so only <5 lines are shown at a time and they automatically scroll
+- add timer mode
 
 - add code/code snippets mode
 - differentiate between most common 200, 1000 words
@@ -27,3 +27,5 @@
 - add restart button
 - style based on user theme
 - add menu to switch between modes
+- add a bank of quotes
+
