@@ -1,3 +1,5 @@
+import { Mode, Length } from "../../src/shared/types"
+
 const menu = (document.getElementById("menu") as HTMLElement);
 const testWrapper = (document.getElementById("test-wrapper") as HTMLElement);
 const inputWrapper = (document.getElementById("input-wrapper") as HTMLElement);
@@ -226,7 +228,7 @@ type TestResults = {
 const calculateResults = function(words: TestWord[], milliseconds: number): TestResults {
   // wpm = (characters_in_correct_words (with spaces) / 5 ) / 60 seconds
   // raw wpm = (characters_in_all_words (with spaces) / 5 ) / 60 seconds
-  // accuracy = correct_key_presses / total_key_presses = correctChars / totalChars
+  // accuracy = correct_key_presses / total_key_presses 
 
   const correctWords = words.filter((word) => word.isComplete())
   // Add correctWords.length - 1 for spaces
@@ -405,6 +407,7 @@ export function resetOrRestartTest() {
   updateDisplay();
   resultsDisplay.classList.add("hidden");
   testWrapper.classList.remove("hidden");
+  menu.classList.remove("hidden");
   userInputField.focus();
 }
 

@@ -1,133 +1,134 @@
 import * as vscode from "vscode";
-import { getPassage, Passage } from "./passage";
+import { Passage } from "@extension/types";
+import { getPassage } from "./passage";
 
 export class TypingTestPanel {
-    public static currentPanel: TypingTestPanel | undefined;
+  public static currentPanel: TypingTestPanel | undefined;
 
-    public static readonly viewType = "typingTest";
-    public static readonly viewTitle = "TITLE";
+  public static readonly viewType = "typingTest";
+  public static readonly viewTitle = "TITLE";
 
-    private readonly _panel: vscode.WebviewPanel;
-    private readonly _extensionUri: vscode.Uri;
-    private _disposables: vscode.Disposable[] = [];
+  private readonly _panel: vscode.WebviewPanel;
+  private readonly _extensionUri: vscode.Uri;
+  private _disposables: vscode.Disposable[] = [];
 
-    public static createOrShow(extensionUri: vscode.Uri) {
-        const column = vscode.window.activeTextEditor
-            ? vscode.window.activeTextEditor.viewColumn
-            : undefined;
+  public static createOrShow(extensionUri: vscode.Uri) {
+    const column = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
 
-        // If we already have a panel, show it
-        if (TypingTestPanel.currentPanel) {
-            TypingTestPanel.currentPanel._panel.reveal(column);
-            return;
+    // If we already have a panel, show it
+    if (TypingTestPanel.currentPanel) {
+      TypingTestPanel.currentPanel._panel.reveal(column);
+      return;
+    }
+
+    // Otherwise, create a new panel.
+    const panel = vscode.window.createWebviewPanel(
+      TypingTestPanel.viewType,
+      TypingTestPanel.viewTitle,
+      column || vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [vscode.Uri.joinPath(extensionUri, "webview")],
+        retainContextWhenHidden: true,
+      }
+    );
+
+    TypingTestPanel.currentPanel = new TypingTestPanel(panel, extensionUri);
+  }
+
+  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    TypingTestPanel.currentPanel = new TypingTestPanel(panel, extensionUri);
+  }
+
+  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    this._panel = panel;
+    this._extensionUri = extensionUri;
+
+    // Set the webview's initial html content
+    this.update();
+
+    // Listen for when the panel is disposed
+    // This happens when the user closes the panel or when the panel is closed programmatically
+    this._panel.onDidDispose(() => this.dispose(), null);
+
+    // Update the content based on view changes
+    // this._panel.onDidChangeViewState(
+    //   () => {
+    //     if (this._panel.visible) {
+    //       this.update();
+    //     }
+    //   },
+    //   null,
+    //   this._disposables
+    // );
+
+    // Handle messages from the webview
+    this._panel.webview.onDidReceiveMessage(
+      async (message) => {
+        let passage: Passage | null = null;
+        switch (message.command) {
+          case "passage-request":
+            passage = await getPassage(
+              this._extensionUri,
+              message.mode,
+              message.length
+            );
         }
 
-        // Otherwise, create a new panel.
-        const panel = vscode.window.createWebviewPanel(
-            TypingTestPanel.viewType,
-            TypingTestPanel.viewTitle,
-            column || vscode.ViewColumn.One,
-            {
-                enableScripts: true,
-                localResourceRoots: [vscode.Uri.joinPath(extensionUri, "webview")],
-                retainContextWhenHidden: true,
-            }
-        );
-
-        TypingTestPanel.currentPanel = new TypingTestPanel(panel, extensionUri);
-    }
-
-    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-        TypingTestPanel.currentPanel = new TypingTestPanel(panel, extensionUri);
-    }
-
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-        this._panel = panel;
-        this._extensionUri = extensionUri;
-
-        // Set the webview's initial html content
-        this.update();
-
-        // Listen for when the panel is disposed
-        // This happens when the user closes the panel or when the panel is closed programmatically
-        this._panel.onDidDispose(() => this.dispose(), null);
-
-        // Update the content based on view changes
-        // this._panel.onDidChangeViewState(
-        //   () => {
-        //     if (this._panel.visible) {
-        //       this.update();
-        //     }
-        //   },
-        //   null,
-        //   this._disposables
-        // );
-
-        // Handle messages from the webview
-        this._panel.webview.onDidReceiveMessage(
-            async (message) => {
-                let passage: Passage | null = null;
-                switch (message.command) {
-                    case "passage-request":
-                        passage = await getPassage(
-                            this._extensionUri,
-                            message.mode,
-                            message.length
-                        );
-                }
-
-                if (!passage) {
-                    console.error("unable to receive passage");
-                    return;
-                }
-                this._panel.webview.postMessage({
-                    command: "passage-response",
-                    passage: passage,
-                });
-                return;
-            },
-            null,
-            this._disposables
-        );
-    }
-
-    // Function to update the webview's html content and title
-    private update() {
-        const webview = this._panel.webview;
-        this._panel.webview.html = this.webViewHtml(webview);
-        this._panel.title = TypingTestPanel.viewTitle;
-        // this._panel.iconPath = vscode.Uri.joinPath(
-        //   this._extensionUri,
-        //   "webview",
-        //   "icon.svg"
-        // );
-    }
-
-    public dispose() {
-        TypingTestPanel.currentPanel = undefined;
-
-        // Clean up our resources
-        this._panel.dispose();
-
-        while (this._disposables.length) {
-            const x = this._disposables.pop();
-            if (x) {
-                x.dispose();
-            }
+        if (!passage) {
+          console.error("unable to receive passage");
+          return;
         }
+        this._panel.webview.postMessage({
+          command: "passage-response",
+          passage: passage,
+        });
+        return;
+      },
+      null,
+      this._disposables
+    );
+  }
+
+  // Function to update the webview's html content and title
+  private update() {
+    const webview = this._panel.webview;
+    this._panel.webview.html = this.webViewHtml(webview);
+    this._panel.title = TypingTestPanel.viewTitle;
+    // this._panel.iconPath = vscode.Uri.joinPath(
+    //   this._extensionUri,
+    //   "webview",
+    //   "icon.svg"
+    // );
+  }
+
+  public dispose() {
+    TypingTestPanel.currentPanel = undefined;
+
+    // Clean up our resources
+    this._panel.dispose();
+
+    while (this._disposables.length) {
+      const x = this._disposables.pop();
+      if (x) {
+        x.dispose();
+      }
     }
+  }
 
-    private webViewHtml(webview: vscode.Webview) {
-        const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "webview", "index.js")
-        );
-        const stylesUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, "webview", "styles.css")
-        );
+  private webViewHtml(webview: vscode.Webview) {
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "webview", "index.js")
+    );
+    const stylesUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "webview", "styles.css")
+    );
 
-        const nonce = generateNonce();
+    const nonce = generateNonce();
 
-        return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
     <html lang="en">
 
     <head>
@@ -268,10 +269,10 @@ export class TypingTestPanel {
     </body>
     </html>
     `;
-    }
+  }
 }
 
 function generateNonce() {
-    const crypto = require("crypto");
-    return crypto.randomBytes(16).toString("base64");
+  const crypto = require("crypto");
+  return crypto.randomBytes(16).toString("base64");
 }

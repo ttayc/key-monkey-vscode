@@ -1,22 +1,27 @@
 import { Uri, workspace } from "vscode";
+// import { Passage, Mode, Length } from "./types"
+import { Passage, Mode, Length } from "@extension/types";
 
 type WordsCache = Record<string, string[]>;
 let wordsCache: WordsCache | null = null;
 
-type QuoteObject = { "text": string, "by": string, "context": string };
+type QuoteObject = { text: string; by: string; context: string };
 type QuotesCache = Record<string, QuoteObject[]>;
 let quotesCache: QuotesCache | null = null;
 
-export type Passage = {
-  mode: string,
-  length: string,
-  text: string[],
-  by: string,
-  context: string
-}
+// export type Passage = {
+//   mode: string,
+//   length: string,
+//   text: string[],
+//   by: string,
+//   context: string
+// }
 
-export async function getPassage(extensionUri: Uri, mode: string, length: string): Promise<Passage> {
-
+export async function getPassage(
+  extensionUri: Uri,
+  mode: Mode,
+  length: Length
+): Promise<Passage> {
   let text: string[] = [];
   let by = "";
   let context = "";
@@ -29,7 +34,7 @@ export async function getPassage(extensionUri: Uri, mode: string, length: string
     case "words":
       if (!wordsCache) {
         path = Uri.joinPath(extensionUri, "passages", "words.json");
-        raw = await workspace.fs.readFile(path)
+        raw = await workspace.fs.readFile(path);
         contents = Buffer.from(raw).toString("utf8");
         wordsCache = JSON.parse(contents);
       }
@@ -49,13 +54,16 @@ export async function getPassage(extensionUri: Uri, mode: string, length: string
     case "quote":
       if (!quotesCache) {
         path = Uri.joinPath(extensionUri, "passages", "quotes.json");
-        raw = await workspace.fs.readFile(path)
+        raw = await workspace.fs.readFile(path);
         contents = Buffer.from(raw).toString("utf8");
         quotesCache = JSON.parse(contents);
       }
 
       // @ts-ignore
-      const quote = quotesCache[length][Math.floor(Math.random() * quotesCache[length].length)];
+      const quote =
+        quotesCache[length][
+          Math.floor(Math.random() * quotesCache[length].length)
+        ];
       text = quote["text"].split(" ");
       by = quote["by"];
       context = quote["context"];
@@ -68,7 +76,6 @@ export async function getPassage(extensionUri: Uri, mode: string, length: string
     length: length,
     text: text,
     by: by,
-    context: context
+    context: context,
   };
 }
-
