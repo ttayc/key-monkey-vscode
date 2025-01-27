@@ -1,6 +1,8 @@
 # TODO
 
-- add more stats -- total time, character stats
+- change quote lengths to be based on character counts not words?
+  - add "what we obtain too easily, we esteem to lightly"
+- add "unknown" as source for quotes if unknown
 - some sort of scroll system so only <5 lines are shown at a time and they automatically scroll
 - add timer mode
 
@@ -28,3 +30,6 @@
 - style based on user theme
 - add menu to switch between modes
 - add a bank of quotes
+- add more stats -- total time, character stats
+
+- fix accuracy stat to calculate based on keystrokes not final characters

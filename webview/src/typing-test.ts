@@ -14,6 +14,7 @@ let completedWord: number;
 let started: boolean;
 let startTime: number;
 
+// TODO: clean or restructure these -- use passage object?
 // passage metadata
 let mode: Mode;
 let length: Length;
@@ -38,11 +39,16 @@ class TestWord {
   // domElements: HTMLElement[];
   trailingSpace: HTMLElement;
 
+  correctKeystrokes: number;
+  totalKeystrokes: number;
+
   public constructor(text: string, wordDomElem: HTMLElement) {
     this.testText = text;
     this.userText = "";
     this.wordDomElem = wordDomElem;
     // this.domElements = [];
+    this.correctKeystrokes = 0;
+    this.totalKeystrokes = 0;
 
     for (let i = 0; i < text.length; i++) {
       const char = document.createElement("span");
@@ -93,9 +99,12 @@ class TestWord {
 
   public writeChar(char: string) {
     this.userText = this.userText.concat(char);
+    this.totalKeystrokes += 1;
 
     if (this.userText.length > this.testText.length) {
       WORDS[currentWord].addExcessChar(char);
+    } else if (char === this.testText.charAt(this.userText.length - 1)) {
+      this.correctKeystrokes += 1;
     }
   }
 
@@ -129,10 +138,10 @@ class TestWord {
   }
 
   /*
-   * Obtain stats of this word
-   * @return counts of correct, incorrect, excess, missed
+   * Obtain character stats of this word
+   * @return counts of correct, incorrect, excess, missed characters
    */
-  public wordStats() {
+  public characterStats() {
     let [correct, incorrect, excess, missed] = [0, 0, 0, 0];
     let i = 0;
     for (; i < this.userText.length; i++) {
@@ -150,6 +159,14 @@ class TestWord {
     }
 
     return [correct, incorrect, excess, missed];
+  }
+
+  /*
+   * Obtain keystroke stats of this word
+   * @return counts of correct, total keystrokes
+   */
+  public keystrokeStats() {
+    return [this.correctKeystrokes, this.totalKeystrokes];
   }
 
   private addExcessChar(char: string) {
@@ -203,11 +220,20 @@ const endTest = function() {
   // console.log(results);
   (document.getElementById("wpm") as HTMLElement).innerText = `${Math.round(results.wpm)}`;
   (document.getElementById("accuracy") as HTMLElement).innerText = `${Math.round(results.accuracy * 100)}%`;
+  (document.getElementById("elapsed-time") as HTMLElement).innerText = `${(results.elapsedMs / 1000).toFixed(1)}`;
   (document.getElementById("raw-wpm") as HTMLElement).innerText = `${Math.round(results.rawWpm)}`;
-  // (document.getElementById("chars-correct") as HTMLElement).innerText = `${results.correctChars}`
-  // (document.getElementById("chars-incorrect") as HTMLElement).innerText = `${results.wpm} wpm`
-  // (document.getElementById("chars-correct") as HTMLElement).innerText = `${results.wpm} wpm`
-  // (document.getElementById("chars-correct") as HTMLElement).innerText = `${results.wpm} wpm`
+
+  (document.getElementById("test-type") as HTMLElement).innerText = `${mode} - ${length}`;
+  if (mode === "quote") {
+    const sourceElem = document.getElementById("source") as HTMLElement;
+    sourceElem.innerText = by;
+    if (context.length > 0) {
+      sourceElem.innerText += context;
+    }
+
+    (document.getElementById("test-source") as HTMLElement).classList.remove("hidden");
+  }
+
   resultsDisplay.classList.remove("hidden");
   testWrapper.classList.add("hidden");
   menu.classList.add("hidden");
@@ -228,7 +254,7 @@ type TestResults = {
 const calculateResults = function(words: TestWord[], milliseconds: number): TestResults {
   // wpm = (characters_in_correct_words (with spaces) / 5 ) / 60 seconds
   // raw wpm = (characters_in_all_words (with spaces) / 5 ) / 60 seconds
-  // accuracy = correct_key_presses / total_key_presses 
+  // accuracy = correct_keystrokes / total_keystrokes
 
   const correctWords = words.filter((word) => word.isComplete())
   // Add correctWords.length - 1 for spaces
@@ -243,16 +269,21 @@ const calculateResults = function(words: TestWord[], milliseconds: number): Test
   const rawWpm = (allWordCharCount / 5) / seconds
 
   let [correctChars, incorrectChars, excessChars, missingChars] = [0, 0, 0, 0];
+  let [correctKeystrokes, totalKeystrokes] = [0, 0];
   words.forEach((word) => {
-    const [correct, incorrect, excess, missing] = word.wordStats();
+    const [correct, incorrect, excess, missing] = word.characterStats();
     correctChars += correct;
     incorrectChars += incorrect;
     excessChars += excess;
     missingChars += missing;
+
+    const [correctKeys, totalKeys] = word.keystrokeStats();
+    correctKeystrokes += correctKeys;
+    totalKeystrokes += totalKeys;
   });
 
   // don't count spaces?
-  const accuracy = correctChars / (correctChars + incorrectChars + excessChars + missingChars);
+  const accuracy = correctKeystrokes / totalKeystrokes;
 
   return {
     elapsedMs: milliseconds,
