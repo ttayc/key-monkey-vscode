@@ -3,6 +3,9 @@
   --incorrect-char-color: var(--vscode-editorError-foreground);
   --excess-char-color: var(--vscode-editorError-foreground);
   --blank-char-color: var(--vscode-editor-foreground);
+
+  /* depending on the theme, it seems that different variables are set so use fallbacks */
+  --highlight-color: var(--vscode-textLink-activeForeground, --vscode-editorLink-activeForeground);
 }
 
 html,
@@ -51,11 +54,20 @@ body {
   width: 50%;
 }
 
+#results #test-description {
+  text-align: left;
+}
+
+#results #test-description .heading {
+  opacity: 0.5;
+}
+
 
 #results table {
   margin-left: auto;
   margin-right: auto;
   border-collapse: collapse;
+  margin-top: 2em;
   margin-bottom: 2em;
   table-layout: fixed;
 }
@@ -153,6 +165,6 @@ button.btn-minimal:active {
 }
 
 .nav-link.active {
-  color: var(--vscode-editorLink-activeForeground);
+  color: var(--highlight-color);
   opacity: 1;
 }

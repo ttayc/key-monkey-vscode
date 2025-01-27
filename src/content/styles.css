@@ -34,6 +34,14 @@ body {
   position: absolute;
 }
 
+#results #test-description {
+  text-align: left;
+}
+
+#results #test-description .heading {
+  opacity: 0.5;
+}
+
 #results .primary-result {
   font-weight: bold;
   /* font-size: 1.1em; */
@@ -43,6 +51,7 @@ body {
   width: 100%;
   /* border: 1px solid black; */
   border-collapse: collapse;
+  margin-top: 2em;
   margin-bottom: 2em;
 }
 
