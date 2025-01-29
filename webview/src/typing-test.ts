@@ -1,4 +1,4 @@
-import { Mode, Length } from "../../src/shared/types"
+import { Passage } from "../../src/shared/types"
 
 const menu = (document.getElementById("menu") as HTMLElement);
 const testWrapper = (document.getElementById("test-wrapper") as HTMLElement);
@@ -8,23 +8,17 @@ const displayedText = (document.getElementById("start-text") as HTMLElement);
 const resultsDisplay = (document.getElementById("results") as HTMLElement);
 
 let WORDS: TestWord[] = [];
+let LINES: TestWord[][];
 let currentWord: number;
 let completedWord: number;
 
 let started: boolean;
 let startTime: number;
 
-// TODO: clean or restructure these -- use passage object?
-// passage metadata
-let mode: Mode;
-let length: Length;
-let by: string;
-let context: string;
+let PASSAGE: Passage;
 
-
-/*
+/**
  * TestWord represents a word in the typing test
- * it contains the test word and the word that the user has input
  */
 class TestWord {
   wordDomElem: HTMLElement;
@@ -97,15 +91,26 @@ class TestWord {
     }
   }
 
-  public writeChar(char: string) {
+  public hide() { this.wordDomElem.classList.add("hidden"); }
+
+  public show() { this.wordDomElem.classList.remove("hidden"); }
+
+  /**
+   * Write a character in this word
+   * @param char to be written
+   * @return true if an excess char was written
+   */
+  public writeChar(char: string): boolean {
     this.userText = this.userText.concat(char);
     this.totalKeystrokes += 1;
 
     if (this.userText.length > this.testText.length) {
       WORDS[currentWord].addExcessChar(char);
+      return true;
     } else if (char === this.testText.charAt(this.userText.length - 1)) {
       this.correctKeystrokes += 1;
     }
+    return false;
   }
 
   public backspace() {
@@ -122,14 +127,14 @@ class TestWord {
     return;
   }
 
-  /*
+  /**
    * Resets word to empty
    */
   public reset() {
     this.userText = "";
   }
 
-  /*
+  /**
    * Check if word is complete
    * @return true if word is complete (user text matches test text)
    */
@@ -137,7 +142,7 @@ class TestWord {
     return this.userText === this.testText;
   }
 
-  /*
+  /**
    * Obtain character stats of this word
    * @return counts of correct, incorrect, excess, missed characters
    */
@@ -161,7 +166,7 @@ class TestWord {
     return [correct, incorrect, excess, missed];
   }
 
-  /*
+  /**
    * Obtain keystroke stats of this word
    * @return counts of correct, total keystrokes
    */
@@ -223,12 +228,12 @@ const endTest = function() {
   (document.getElementById("elapsed-time") as HTMLElement).innerText = `${(results.elapsedMs / 1000).toFixed(1)}`;
   (document.getElementById("raw-wpm") as HTMLElement).innerText = `${Math.round(results.rawWpm)}`;
 
-  (document.getElementById("test-type") as HTMLElement).innerText = `${mode} - ${length}`;
-  if (mode === "quote") {
+  (document.getElementById("test-type") as HTMLElement).innerText = `${PASSAGE.mode} - ${PASSAGE.length}`;
+  if (PASSAGE.mode === "quote") {
     const sourceElem = document.getElementById("source") as HTMLElement;
-    sourceElem.innerText = by;
-    if (context.length > 0) {
-      sourceElem.innerText += context;
+    sourceElem.innerText = PASSAGE.by;
+    if (PASSAGE.context.length > 0) {
+      sourceElem.innerText += PASSAGE.context;
     }
 
     (document.getElementById("test-source") as HTMLElement).classList.remove("hidden");
@@ -238,7 +243,6 @@ const endTest = function() {
   testWrapper.classList.add("hidden");
   menu.classList.add("hidden");
 }
-
 
 type TestResults = {
   elapsedMs: number;
@@ -301,7 +305,6 @@ const calculateResults = function(words: TestWord[], milliseconds: number): Test
 
 
 userInputField.addEventListener("keydown", (event) => {
-  // console.log(event);
 
   // prevent movement within input field
   const keyboardEvent = event as KeyboardEvent
@@ -323,6 +326,8 @@ userInputField.addEventListener("keydown", (event) => {
     setCursor();
     updateWordCount();
 
+    displayLines();
+
     event.preventDefault();
     return false;
   }
@@ -330,11 +335,9 @@ userInputField.addEventListener("keydown", (event) => {
 });
 
 const processInput = function(event: InputEvent) {
-  // console.log((event.target as HTMLTextAreaElement).value);
-  // console.log(event);
-
   if (event.inputType === "deleteContentBackward") {
     WORDS[currentWord].backspace();
+    createLines();
     return;
   }
 
@@ -347,7 +350,10 @@ const processInput = function(event: InputEvent) {
       startTime = Date.now();
       started = true;
     }
-    WORDS[currentWord].writeChar(data);
+    const recreateLines = WORDS[currentWord].writeChar(data);
+    if (recreateLines) {
+      createLines();
+    }
 
     // end
     if (currentWord === WORDS.length - 1 && WORDS[currentWord].isComplete()) {
@@ -370,17 +376,15 @@ const processInput = function(event: InputEvent) {
       currentWord += 1;
     }
 
-    // no space as first char on a word
+    // don't allow space as first char on a word
     (event.target as HTMLTextAreaElement).value = "";
-
   }
 }
 
 userInputField.addEventListener("input", (event) => {
   processInput(event as InputEvent);
 
-  // console.log(WORDS.map((word) => word.userText));
-
+  displayLines();
   updateDisplay();
 });
 
@@ -395,12 +399,68 @@ inputWrapper.addEventListener("click", (_) => {
   // console.log("focus");
 });
 
+// on viewport change, we need to re-create/display the lines
+addEventListener("resize", (_) => {
+  createLines();
+  displayLines();
+});
 
-export function initializeTest(passage) {
+const createLines = function() {
+  // temporarily unhide all words so getBoundingClientRect() works properly
+  WORDS.forEach((word) => { word.show(); });
+
+  LINES = [[]];
+  let currLineY = WORDS[0].wordDomElem.getBoundingClientRect().y;
+  WORDS.forEach((word) => {
+    if (Math.abs(word.wordDomElem.getBoundingClientRect().y - currLineY) > 0.001) {
+      currLineY = word.wordDomElem.getBoundingClientRect().y;
+      LINES.push([]);
+    }
+    LINES[LINES.length - 1].push(word);
+  });
+  // console.log(LINES);
+}
+
+const displayLines = function() {
+  let currentLine = 0;
+  let seenWords = 0;
+  for (let i = 0; i < LINES.length; i++) {
+    seenWords += LINES[i].length;
+    if (seenWords > currentWord) {
+      currentLine = i;
+      break;
+    }
+    currentLine += 1;
+  }
+
+  // on middle line, show prev and next line
+  let showPredicate = (i: number) => (i >= currentLine - 1 && i <= currentLine + 1);
+  // on first line, show next 2 lines
+  if (currentLine === 0) {
+    showPredicate = (i: number) => (i >= currentLine && i <= currentLine + 2);
+  }
+  // on last line, show prev 2 lines
+  else if (currentLine === LINES.length - 1) {
+    showPredicate = (i: number) => (i >= currentLine - 2 && i <= currentLine);
+  }
+
+  LINES.forEach((line, i) => {
+    if (showPredicate(i)) {
+      line.forEach((word) => { word.show() });
+    } else {
+      line.forEach((word) => { word.hide() });
+    }
+  });
+}
+
+export function initializeTest(passage: Passage) {
   WORDS = [];
+  PASSAGE = passage;
+  LINES = [];
+
   displayedText.innerText = "";
 
-  passage.text.forEach((wordText) => {
+  passage.text.forEach((wordText: string) => {
     const wordElem = document.createElement("span");
     wordElem.classList.add('word');
 
@@ -414,31 +474,17 @@ export function initializeTest(passage) {
   completedWord = -1;
   started = false;
 
-  mode = passage.mode;
-  by = passage.by;
-  length = passage.length;
-  context = passage.context;
-
   updateDisplay();
   resultsDisplay.classList.add("hidden");
   testWrapper.classList.remove("hidden");
   menu.classList.remove("hidden");
   userInputField.focus();
+
+  createLines();
+  displayLines();
 }
 
 export function resetOrRestartTest() {
-  WORDS.forEach((word) => {
-    word.reset();
-  });
-
-  currentWord = 0;
-  completedWord = -1;
-  started = false;
-
-  updateDisplay();
-  resultsDisplay.classList.add("hidden");
-  testWrapper.classList.remove("hidden");
-  menu.classList.remove("hidden");
-  userInputField.focus();
+  initializeTest(PASSAGE);
 }
 

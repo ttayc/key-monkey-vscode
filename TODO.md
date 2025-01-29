@@ -1,6 +1,5 @@
 # TODO
 
-- some sort of scroll system so only <5 lines are shown at a time and they automatically scroll
 - add timer mode
 
 - add code/code snippets mode
@@ -29,6 +28,7 @@
 - add menu to switch between modes
 - add a bank of quotes
 - add more stats -- total time, character stats
+- some sort of scroll system so only 3 lines are shown at a time and they automatically scroll
 
 - add "unknown" as source for quotes if unknown
 - fix accuracy stat to calculate based on keystrokes not final characters
