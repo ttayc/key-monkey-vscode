@@ -1,4 +1,4 @@
-import { Passage } from "../../src/shared/types"
+import { Passage, Mode } from "../../src/shared/types"
 
 const menu = (document.getElementById("menu") as HTMLElement);
 const testWrapper = (document.getElementById("test-wrapper") as HTMLElement);
@@ -135,10 +135,10 @@ class TestWord {
   }
 
   /**
-   * Check if word is complete
-   * @return true if word is complete (user text matches test text)
+   * Check if word is correct - user text matches test text
+   * @return true if word is correct
    */
-  public isComplete() {
+  public isCorrect() {
     return this.userText === this.testText;
   }
 
@@ -205,21 +205,37 @@ const setColors = function() {
   WORDS.forEach((word) => word.setColors());
 };
 
-const wordCountDisplay = (document.getElementById("word-count") as HTMLElement)
+const statsDisplay = (document.getElementById("stats") as HTMLElement);
 const updateWordCount = function() {
-  wordCountDisplay.innerText = `${currentWord}/${WORDS.length}`
+  statsDisplay.innerText = `${currentWord}/${WORDS.length}`
 };
 
-const updateDisplay = function() {
+const updateDisplay = function(mode: Mode) {
   setCursor();
   setColors();
-  updateWordCount();
+  if (mode !== "time") {
+    updateWordCount();
+  }
+}
+
+let TIMER_INTERVAL: NodeJS.Timeout;
+const startTimer = function() {
+  const length = parseInt(PASSAGE.length);
+  TIMER_INTERVAL = setInterval(() => {
+    let elapsedSeconds = 0;
+    if (startTime > 0) {
+      elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+    }
+    if (elapsedSeconds >= length) {
+      clearInterval(TIMER_INTERVAL);
+      endTest();
+    }
+    statsDisplay.innerText = `${length - elapsedSeconds}`;
+  }, 200);
 }
 
 
 const endTest = function() {
-  // console.log("END");
-
   const elapsedTime = Date.now() - startTime;
   const results = calculateResults(WORDS, elapsedTime);
   // console.log(results);
@@ -233,12 +249,13 @@ const endTest = function() {
     const sourceElem = document.getElementById("source") as HTMLElement;
     sourceElem.innerText = PASSAGE.by;
     if (PASSAGE.context.length > 0) {
-      sourceElem.innerText += PASSAGE.context;
+      sourceElem.innerText += `, ${PASSAGE.context}`;
     }
 
     (document.getElementById("test-source") as HTMLElement).classList.remove("hidden");
   }
 
+  startTime = -1;
   resultsDisplay.classList.remove("hidden");
   testWrapper.classList.add("hidden");
   menu.classList.add("hidden");
@@ -260,17 +277,17 @@ const calculateResults = function(words: TestWord[], milliseconds: number): Test
   // raw wpm = (characters_in_all_words (with spaces) / 5 ) / 60 seconds
   // accuracy = correct_keystrokes / total_keystrokes
 
-  const correctWords = words.filter((word) => word.isComplete())
-  // Add correctWords.length - 1 for spaces
+  const correctWords = words.filter((word) => word.isCorrect())
+  // Add correctWords.length - 1 to account for spaces
   const correctWordCharCount = correctWords
     .reduce((count, word) => count + word.userText.length, 0) + correctWords.length - 1;
 
   // Add words.length - 1 for spaces
   const allWordCharCount =
     words.reduce((count, word) => count + word.userText.length, 0) + words.length - 1;
-  const seconds = milliseconds / 1000 / 60;
-  const wpm = (correctWordCharCount / 5) / seconds
-  const rawWpm = (allWordCharCount / 5) / seconds
+  const minutes = milliseconds / 1000 / 60;
+  const wpm = (correctWordCharCount / 5) / minutes
+  const rawWpm = (allWordCharCount / 5) / minutes
 
   let [correctChars, incorrectChars, excessChars, missingChars] = [0, 0, 0, 0];
   let [correctKeystrokes, totalKeystrokes] = [0, 0];
@@ -302,7 +319,6 @@ const calculateResults = function(words: TestWord[], milliseconds: number): Test
 }
 
 // ========================================================================
-
 
 userInputField.addEventListener("keydown", (event) => {
 
@@ -356,7 +372,7 @@ const processInput = function(event: InputEvent) {
     }
 
     // end
-    if (currentWord === WORDS.length - 1 && WORDS[currentWord].isComplete()) {
+    if (currentWord === WORDS.length - 1 && WORDS[currentWord].isCorrect()) {
       endTest();
     }
 
@@ -366,7 +382,7 @@ const processInput = function(event: InputEvent) {
       endTest();
     }
     // compare this word with test word to see if it should be completed
-    if (WORDS[currentWord].isComplete() && currentWord - 1 === completedWord) {
+    if (WORDS[currentWord].isCorrect() && currentWord - 1 === completedWord) {
       // console.log('completed');
       completedWord += 1;
     }
@@ -385,7 +401,7 @@ userInputField.addEventListener("input", (event) => {
   processInput(event as InputEvent);
 
   displayLines();
-  updateDisplay();
+  updateDisplay(PASSAGE.mode);
 });
 
 userInputField.addEventListener("blur", (_) => {
@@ -453,12 +469,18 @@ const displayLines = function() {
   });
 }
 
+
+
 export function initializeTest(passage: Passage) {
   WORDS = [];
   PASSAGE = passage;
   LINES = [];
 
   displayedText.innerText = "";
+
+  if (TIMER_INTERVAL) {
+    clearInterval(TIMER_INTERVAL);
+  }
 
   passage.text.forEach((wordText: string) => {
     const wordElem = document.createElement("span");
@@ -473,8 +495,13 @@ export function initializeTest(passage: Passage) {
   currentWord = 0;
   completedWord = -1;
   started = false;
+  startTime = -1;
 
-  updateDisplay();
+  // TODO: adaptively request more words as user approaches end of current passage
+  if (passage.mode === "time") {
+    startTimer();
+  }
+  updateDisplay(passage.mode);
   resultsDisplay.classList.add("hidden");
   testWrapper.classList.remove("hidden");
   menu.classList.remove("hidden");

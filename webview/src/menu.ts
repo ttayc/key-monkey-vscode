@@ -4,14 +4,12 @@ import $ from "jquery";
 import { Mode, Length } from "../../src/shared/types";
 import { getNewPassage } from "./index";
 
-document.getElementById("blah");
-
 
 let currentMode: Mode = "words";
 let currentLength: Record<Mode, Partial<Length>> = {
   words: "10",
   quote: "short",
-  time: "15s",
+  time: "15",
 };
 
 export type TypingTestConfig = {
@@ -37,7 +35,6 @@ const setModeActive = function(mode: Mode) {
     return;
   }
   currentMode = mode;
-  // TODO: uncomment when other modes are implemented
   getNewPassage(getTypingTestConfig());
 
   for (const [_mode, elem] of Object.entries(modeOptions)) {
@@ -75,10 +72,10 @@ const modesToLengths: ModesToLengths = {
     long: $("#length-menu .nav-item .length-long"),
   },
   time: {
-    "15s": $("#length-menu .nav-item .length-15s"),
-    "30s": $("#length-menu .nav-item .length-30s"),
-    "60s": $("#length-menu .nav-item .length-60s"),
-    "120s": $("#length-menu .nav-item .length-120s"),
+    "15": $("#length-menu .nav-item .length-15s"),
+    "30": $("#length-menu .nav-item .length-30s"),
+    "60": $("#length-menu .nav-item .length-60s"),
+    "120": $("#length-menu .nav-item .length-120s"),
   },
 };
 

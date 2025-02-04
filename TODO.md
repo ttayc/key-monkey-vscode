@@ -7,8 +7,6 @@
 
 ## bugs
 
-- if viewport is too narrow, can't scroll up to stats or menu
-
 ## maybe
 
 - change quote lengths to be based on character counts not words?

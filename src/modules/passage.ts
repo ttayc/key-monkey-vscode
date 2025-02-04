@@ -38,19 +38,43 @@ export async function getPassage(
         contents = Buffer.from(raw).toString("utf8");
         wordsCache = JSON.parse(contents);
       }
+      if (wordsCache) { // should always be true, here to please the lsp
+        const wordBank: string[] = wordsCache[mode];
 
-      // @ts-ignore
-      const wordBank: string[] = wordsCache[mode];
+        const indices: Set<number> = new Set();
+        while (indices.size < parseInt(length)) {
+          indices.add(Math.floor(Math.random() * wordBank.length));
+        }
 
-      const indices: Set<number> = new Set();
-      while (indices.size < parseInt(length)) {
-        indices.add(Math.floor(Math.random() * wordBank.length));
+        for (let idx of indices) {
+          text.push(wordBank[idx]);
+        }
       }
 
-      for (let idx of indices) {
-        text.push(wordBank[idx]);
-      }
       break;
+    case "time":
+      if (!wordsCache) {
+        path = Uri.joinPath(extensionUri, "passages", "words.json");
+        raw = await workspace.fs.readFile(path);
+        contents = Buffer.from(raw).toString("utf8");
+        wordsCache = JSON.parse(contents);
+      }
+
+      if (wordsCache) { // should always be true, here to please the lsp
+        const wordBank: string[] = wordsCache["words"];
+
+        const indices: Set<number> = new Set();
+        while (indices.size < parseInt(length) * 4) {
+          indices.add(Math.floor(Math.random() * wordBank.length));
+        }
+
+        for (let idx of indices) {
+          text.push(wordBank[idx]);
+        }
+      }
+
+      break;
+
     case "quote":
       if (!quotesCache) {
         path = Uri.joinPath(extensionUri, "passages", "quotes.json");
@@ -58,15 +82,14 @@ export async function getPassage(
         contents = Buffer.from(raw).toString("utf8");
         quotesCache = JSON.parse(contents);
       }
-
-      // @ts-ignore
-      const quote =
-        quotesCache[length][
+      if (quotesCache) { // should always be true, here to please the lsp
+        const quote = quotesCache[length][
           Math.floor(Math.random() * quotesCache[length].length)
         ];
-      text = quote["text"].split(" ");
-      by = quote["by"];
-      context = quote["context"];
+        text = quote["text"].split(" ");
+        by = quote["by"];
+        context = quote["context"];
+      }
 
       break;
   }
