@@ -28,6 +28,7 @@ class TestWord {
 
   // the user's text for this word
   userText: string;
+  attempted: boolean;
 
   // HTMLElements to render text, may contain extra chars based on user input
   // domElements: HTMLElement[];
@@ -39,6 +40,7 @@ class TestWord {
   public constructor(text: string, wordDomElem: HTMLElement) {
     this.testText = text;
     this.userText = "";
+    this.attempted = false;
     this.wordDomElem = wordDomElem;
     // this.domElements = [];
     this.correctKeystrokes = 0;
@@ -101,6 +103,7 @@ class TestWord {
    * @return true if an excess char was written
    */
   public writeChar(char: string): boolean {
+    this.attempted = true;
     this.userText = this.userText.concat(char);
     this.totalKeystrokes += 1;
 
@@ -121,7 +124,6 @@ class TestWord {
       }
 
       this.userText = this.userText.slice(0, -1);
-
       // console.log('bksp');
     }
     return;
@@ -132,6 +134,14 @@ class TestWord {
    */
   public reset() {
     this.userText = "";
+  }
+
+  /**
+   * Check if word was attempted, the user wrote text on it at some point
+   * @return true if word was attempted
+   */
+  public isAttempted() {
+    return this.attempted;
   }
 
   /**
@@ -205,9 +215,10 @@ const setColors = function() {
   WORDS.forEach((word) => word.setColors());
 };
 
-const statsDisplay = (document.getElementById("stats") as HTMLElement);
+// const statsDisplay = (document.getElementById("stats") as HTMLElement);
+const wordCountDisplay = (document.getElementById("word-count") as HTMLElement);
 const updateWordCount = function() {
-  statsDisplay.innerText = `${currentWord}/${WORDS.length}`
+  wordCountDisplay.innerText = `${currentWord}/${WORDS.length}`
 };
 
 const updateDisplay = function(mode: Mode) {
@@ -218,6 +229,7 @@ const updateDisplay = function(mode: Mode) {
   }
 }
 
+const timerDisplay = (document.getElementById("timer") as HTMLElement);
 let TIMER_INTERVAL: NodeJS.Timeout;
 const startTimer = function() {
   const length = parseInt(PASSAGE.length);
@@ -230,7 +242,7 @@ const startTimer = function() {
       clearInterval(TIMER_INTERVAL);
       endTest();
     }
-    statsDisplay.innerText = `${length - elapsedSeconds}`;
+    timerDisplay.innerText = `${length - elapsedSeconds}`;
   }, 200);
 }
 
@@ -245,13 +257,15 @@ const endTest = function() {
   (document.getElementById("raw-wpm") as HTMLElement).innerText = `${Math.round(results.rawWpm)}`;
 
   (document.getElementById("test-type") as HTMLElement).innerText = `${PASSAGE.mode} - ${PASSAGE.length}`;
-  if (PASSAGE.mode === "quote") {
+
+  if (PASSAGE.mode !== "quote") {
+    (document.getElementById("test-source") as HTMLElement).classList.add("hidden");
+  } else {
     const sourceElem = document.getElementById("source") as HTMLElement;
     sourceElem.innerText = PASSAGE.by;
     if (PASSAGE.context.length > 0) {
       sourceElem.innerText += `, ${PASSAGE.context}`;
     }
-
     (document.getElementById("test-source") as HTMLElement).classList.remove("hidden");
   }
 
@@ -277,21 +291,23 @@ const calculateResults = function(words: TestWord[], milliseconds: number): Test
   // raw wpm = (characters_in_all_words (with spaces) / 5 ) / 60 seconds
   // accuracy = correct_keystrokes / total_keystrokes
 
-  const correctWords = words.filter((word) => word.isCorrect())
+  const attemptedWords = words.filter((word) => word.isAttempted());
+
+  const correctWords = attemptedWords.filter((word) => word.isCorrect())
   // Add correctWords.length - 1 to account for spaces
   const correctWordCharCount = correctWords
     .reduce((count, word) => count + word.userText.length, 0) + correctWords.length - 1;
 
   // Add words.length - 1 for spaces
   const allWordCharCount =
-    words.reduce((count, word) => count + word.userText.length, 0) + words.length - 1;
+    attemptedWords.reduce((count, word) => count + word.userText.length, 0) + attemptedWords.length - 1;
   const minutes = milliseconds / 1000 / 60;
   const wpm = (correctWordCharCount / 5) / minutes
   const rawWpm = (allWordCharCount / 5) / minutes
 
   let [correctChars, incorrectChars, excessChars, missingChars] = [0, 0, 0, 0];
   let [correctKeystrokes, totalKeystrokes] = [0, 0];
-  words.forEach((word) => {
+  attemptedWords.forEach((word) => {
     const [correct, incorrect, excess, missing] = word.characterStats();
     correctChars += correct;
     incorrectChars += incorrect;
@@ -470,7 +486,6 @@ const displayLines = function() {
 }
 
 
-
 export function initializeTest(passage: Passage) {
   WORDS = [];
   PASSAGE = passage;
@@ -499,7 +514,12 @@ export function initializeTest(passage: Passage) {
 
   // TODO: adaptively request more words as user approaches end of current passage
   if (passage.mode === "time") {
+    wordCountDisplay.classList.add("hidden");
+    timerDisplay.classList.remove("hidden");
     startTimer();
+  } else {
+    wordCountDisplay.classList.remove("hidden");
+    timerDisplay.classList.add("hidden");
   }
   updateDisplay(passage.mode);
   resultsDisplay.classList.add("hidden");

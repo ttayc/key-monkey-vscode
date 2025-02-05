@@ -215,7 +215,10 @@ export class TypingTestPanel {
         </ul>
 
             <div id="test-wrapper">
-                <div id="stats"> </div>
+                <div id="stats">
+                    <div id="word-count"></div>
+                    <div id="timer"></div>
+                </div>
                 <div id="input-wrapper">
                     <input type="text" id="user-text" onpaste="return false;" ondrop="return false;" spellcheck="false"
                         autocomplete="off" autocorrect="off" autocapitalize="off" />

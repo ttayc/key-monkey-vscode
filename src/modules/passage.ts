@@ -63,9 +63,9 @@ export async function getPassage(
       if (wordsCache) { // should always be true, here to please the lsp
         const wordBank: string[] = wordsCache["words"];
 
-        const indices: Set<number> = new Set();
-        while (indices.size < parseInt(length) * 4) {
-          indices.add(Math.floor(Math.random() * wordBank.length));
+        const indices: number[] = [];
+        while (indices.length < parseInt(length) * 4) {
+          indices.push(Math.floor(Math.random() * wordBank.length));
         }
 
         for (let idx of indices) {
