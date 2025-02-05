@@ -1,6 +1,6 @@
 {
-  "name": "code-monkey",
-  "displayName": "Code Monkey",
+  "name": "code-monk",
+  "displayName": "Code Monk",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "code-monkey.helloWorld",
-        "title": "Hello World"
+        "command": "code-monk.start",
+        "title": "Code Monk: Start"
       }
     ]
   },

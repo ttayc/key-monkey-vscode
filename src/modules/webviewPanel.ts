@@ -6,7 +6,7 @@ export class TypingTestPanel {
     public static currentPanel: TypingTestPanel | undefined;
 
     public static readonly viewType = "typingTest";
-    public static readonly viewTitle = "TITLE";
+    public static readonly viewTitle = "Code Monk";
 
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionUri: vscode.Uri;
@@ -151,7 +151,7 @@ export class TypingTestPanel {
         <link rel="stylesheet" href="${stylesUri}">
 
 
-        <title>Code Monkey</title>
+        <title>Code Monk</title>
 
     </head>
 

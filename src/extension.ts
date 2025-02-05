@@ -10,11 +10,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
   const disposable = vscode.commands.registerCommand(
-    "code-monkey.helloWorld",
+    "code-monk.start",
     () => {
       TypingTestPanel.createOrShow(context.extensionUri);
-
-      vscode.window.showInformationMessage("Ran");
     }
   );
 
@@ -25,7 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
         webviewPanel: vscode.WebviewPanel,
         state: unknown
       ) {
-        console.log(`Got state: ${state}`);
         // Reset the webview options so we use latest uri for `localResourceRoots`.
         webviewPanel.webview.options = {
           enableScripts: true,
@@ -42,4 +39,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
