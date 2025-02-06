@@ -1,9 +1,6 @@
 # TODO
 
-- add timer mode
-
 - add code/code snippets mode
-- differentiate between most common 200, 1000 words
 
 ## bugs
 
@@ -27,6 +24,7 @@
 - add a bank of quotes
 - add more stats -- total time, character stats
 - some sort of scroll system so only 3 lines are shown at a time and they automatically scroll
+- add timer mode
 
 - add "unknown" as source for quotes if unknown
 - fix accuracy stat to calculate based on keystrokes not final characters
