@@ -6,11 +6,12 @@ export class TypingTestPanel {
     public static currentPanel: TypingTestPanel | undefined;
 
     public static readonly viewType = "typingTest";
-    public static readonly viewTitle = "Code Monk";
+    public static readonly viewTitle = "Key Monkey";
 
     private readonly _panel: vscode.WebviewPanel;
     private readonly _extensionUri: vscode.Uri;
     private _disposables: vscode.Disposable[] = [];
+
 
     public static createOrShow(extensionUri: vscode.Uri) {
         const column = vscode.window.activeTextEditor
@@ -97,7 +98,9 @@ export class TypingTestPanel {
         const webview = this._panel.webview;
         this._panel.webview.html = this.webViewHtml(webview);
         this._panel.title = TypingTestPanel.viewTitle;
-        this._panel.iconPath = vscode.Uri.joinPath(this._extensionUri, "webview", "yinyang.svg");
+
+        const icon = (vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark) ? "icon-dark.svg" : "icon-light.svg";
+        this._panel.iconPath = vscode.Uri.joinPath(this._extensionUri, "webview", "assets", icon);
     }
 
     public dispose() {
@@ -146,7 +149,7 @@ export class TypingTestPanel {
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link rel="stylesheet" href="${stylesUri}">
 
-        <title>Code Monk</title>
+        <title>Key Monkey</title>
 
     </head>
 

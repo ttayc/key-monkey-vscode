@@ -6,10 +6,8 @@
 
 ## maybe
 
-- change quote lengths to be based on character counts not words?
 - add timeout if user takes too long (forgot about test in background)
 - persist configuration across instances
-- speed/errors stats and graph
 
 # Done
 

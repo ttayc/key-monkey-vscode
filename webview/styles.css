@@ -127,6 +127,9 @@ button.btn-minimal {
   border: none;
   color: var(--vscode-editor-foreground);
   opacity: 0.5;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 button.btn-minimal:hover {

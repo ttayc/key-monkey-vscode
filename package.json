@@ -1,21 +1,34 @@
 {
-  "name": "code-monk",
-  "displayName": "Code Monk - Typing Test",
-  "description": "",
+  "name": "key-monkey",
+  "displayName": "Key Monkey - Typing Test",
+  "description": "A typing test extension for VSCode",
+  "icon": "icon.png",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttayc/key-monkey-vscode"
+  },
+  "license": "SEE LICENSE IN LICENSE",
   "engines": {
     "vscode": "^1.96.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "typing",
+    "typing test",
+    "ttayc",
+    "speed",
+    "practice"
+  ]
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "code-monk.start",
-        "title": "Code Monk: Start"
+        "command": "key-monkey.start",
+        "title": "Key Monkey: Start"
       }
     ]
   },
