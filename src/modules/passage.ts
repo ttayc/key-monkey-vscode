@@ -1,6 +1,6 @@
 import { Uri, workspace } from "vscode";
 // import { Passage, Mode, Length } from "./types"
-import { Passage, Mode, Length } from "@extension/types";
+import { Passage, Mode, Length } from "@shared/types";
 
 type WordsCache = Record<string, string[]>;
 let wordsCache: WordsCache | null = null;

@@ -21,7 +21,7 @@
     "ttayc",
     "speed",
     "practice"
-  ]
+  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {

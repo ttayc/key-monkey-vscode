@@ -1,7 +1,5 @@
 import $ from "jquery";
-// TODO: figure out why this doesn't work
-// import { Mode, Length } from "@extension/types";
-import { Mode, Length } from "../../src/shared/types";
+import { Mode, Length } from "@shared/types";
 import { getNewPassage } from "./index";
 
 

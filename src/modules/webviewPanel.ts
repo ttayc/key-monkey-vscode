@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Passage } from "@extension/types";
+import { Passage } from "@shared/types";
 import { getPassage } from "./passage";
 
 export class TypingTestPanel {
