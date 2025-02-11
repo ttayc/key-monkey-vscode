@@ -1,6 +1,7 @@
 {
   "name": "key-monkey",
   "displayName": "Key Monkey - Typing Test",
+  "publisher": "ttayc",
   "description": "A typing test extension for VSCode",
   "icon": "icon.png",
   "version": "0.0.1",
@@ -8,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/ttayc/key-monkey-vscode"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
     "vscode": "^1.96.0"
   },

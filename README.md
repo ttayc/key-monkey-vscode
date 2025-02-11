@@ -16,6 +16,12 @@ A typing test extension for VSCode.
 - **Quote mode**: type a random quote
 - **Timer mode**: type until the timer expires
 
+### Future Enhancements
+
+- code snippets mode
+- persist configuration across instances
+- timeout if user takes too long
+
 ## Contributions
 
 Pull requests and issues are welcome! Feedback is appreciated!
