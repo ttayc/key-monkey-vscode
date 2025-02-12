@@ -1,12 +1,12 @@
 # Key Monkey
 
-A typing test extension for VSCode.
+A typing test inside your editor!
 
 ![demo](key_monkey_demo.gif)
 
 ## Getting Started
 
-1. download extension from [Visual Studio Marketplace](https://marketplace.visualstudio.com/vscode)
+1. download extension from [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ttayc.key-monkey)
 2. `Ctrl + Shift + P` to open the command palette
 3. type `Key Monkey: Start` and hit enter
 
