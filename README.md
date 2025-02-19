@@ -25,3 +25,19 @@ A typing test inside your editor!
 ## Contributions
 
 Pull requests and issues are welcome! Feedback is appreciated!
+
+### Development Setup
+
+When running for the first time, the extension needs the emitted `webview/index.js` file to exist, so compile it first:
+
+```sh
+npm run compile:webview
+```
+
+When making changes to the [webview/](webview/), make sure to recompile before rerunning the extension too:
+
+```sh
+npm run compile:webview
+```
+
+Then as usual, open [src/extension.ts](src/extension.ts) and run the command **Debug: Start Debugging** (<kbd>F5</kbd>) to launch the extension locally in the **Extension Development Host**.

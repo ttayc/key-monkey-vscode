@@ -224,7 +224,7 @@ export class TypingTestPanel {
                     <div id="start-text"></div>
                 </div>
               <button type="button" id="restart-button" class="btn btn-minimal" data-bs-toggle="tooltip"
-                  data-bs-placement="bottom" data-bs-title="restart">
+                  data-bs-placement="bottom" data-bs-title="restart (Shift+Enter)">
                   <i class="bi bi-arrow-clockwise"></i>
               </button>
             </div>
@@ -263,13 +263,13 @@ export class TypingTestPanel {
                 <div class="row">
                     <div class="col">
                         <button type="button" id="next-button" class="btn btn-minimal" data-bs-toggle="tooltip"
-                            data-bs-placement="bottom" data-bs-title="next">
+                            data-bs-placement="bottom" data-bs-title="next (Enter)">
                             <i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
                     <div class="col">
                         <button type="button" id="retry-button" class="btn btn-minimal" data-bs-toggle="tooltip"
-                            data-bs-placement="bottom" data-bs-title="retry">
+                            data-bs-placement="bottom" data-bs-title="retry (Shift+Enter)">
                             <i class="bi bi-arrow-repeat"></i>
                         </button>
                     </div>
