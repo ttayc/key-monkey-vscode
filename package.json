@@ -4,7 +4,7 @@
   "publisher": "ttayc",
   "description": "A typing test extension for VSCode",
   "icon": "icon.png",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttayc/key-monkey-vscode"
